@@ -15,24 +15,34 @@ namespace MvcCoreEmpleadosMultiplesRutas.Services
             this.header = new MediaTypeWithQualityHeaderValue("application/json");
         }
 
-        public async Task<List<Empleado>> GetEmpleadosAsync()
+        private async Task<T> CallApisAsync<T>(string request)
         {
             using (HttpClient client = new HttpClient())
             {
-                string request = "api/empleados";
                 client.BaseAddress = new Uri(this.ApiUrl);
                 client.DefaultRequestHeaders.Clear();
                 client.DefaultRequestHeaders.Accept.Add(this.header);
                 HttpResponseMessage response = await client.GetAsync(request);
                 if (response.IsSuccessStatusCode)
                 {
-                    List<Empleado> data = await response.Content.ReadAsAsync<List<Empleado>>();
+                    T data = await response.Content.ReadAsAsync<T>();
                     return data;
                 }
                 else
                 {
-                    return null;
+                    return default(T);
                 }
+            }
+        }
+
+        public async Task<List<Empleado>> GetEmpleadosAsync()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                string request = "api/empleados";
+                List<Empleado> data = await this.CallApisAsync<List<Empleado>>(request);
+                return data;
+               
             }
         }
 
@@ -40,21 +50,17 @@ namespace MvcCoreEmpleadosMultiplesRutas.Services
         {
             using (HttpClient client = new HttpClient())
             {
-                string request = "api/oficios";
-                client.BaseAddress = new Uri(this.ApiUrl);
-                client.DefaultRequestHeaders.Clear();
-                client.DefaultRequestHeaders.Accept.Add(this.header);
-                HttpResponseMessage response = await client.GetAsync(request);
-                if (response.IsSuccessStatusCode)
-                {
-                    List<string> data = await response.Content.ReadAsAsync<List<string>>();
-                    return data;
-                }
-                else
-                {
-                    return null;
-                }
+                string request = "api/Empleados/Oficios";
+                List<string> data = await this.CallApisAsync<List<string>>(request);
+                return data;
             }
+        }
+
+        public async Task<List<Empleado>> GetEmpleadosOficioAsync(string oficio)
+        {
+            string request = "api/empleados/empleadosoficio/" + oficio;
+            List<Empleado> empleados = await this.CallApisAsync<List<Empleado>>(request);
+            return empleados;
         }
     }
 }

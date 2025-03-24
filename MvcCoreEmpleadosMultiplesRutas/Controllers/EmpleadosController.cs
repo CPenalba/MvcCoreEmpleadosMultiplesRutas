@@ -20,5 +20,14 @@ namespace MvcCoreEmpleadosMultiplesRutas.Controllers
             ViewData["OFICIOS"] = oficios;
             return View(empleados);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Index(string oficio)
+        {
+            List<Empleado> empleados = await this.service.GetEmpleadosOficioAsync(oficio);
+            List<string> oficios = await this.service.GetOficiosAsync();
+            ViewData["OFICIOS"] = oficios;
+            return View(empleados);
+        }
     }
 }
